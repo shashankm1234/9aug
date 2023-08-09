@@ -1,0 +1,173 @@
+-> After running the springboot app, we know our Tomcat server started at port 8080.
+In postman, localhost:8080 + Enter , now request goes on port 8080
+
+-> To map get request  /home
+@GetMapping("/home")        // means run the function when /home is fired
+
+-> GET
+@GetMapping("/courses/{courseId}")
+gives us a single course we want when we give the id, since we'll give courseId value we write as {courseId}
+localhost:8080/courses  gives list of all courses
+[
+    {
+        "id": 145,
+        "title": "Java Core Course",
+        "description": "this course contains basics of java"
+    },
+    {
+        "id": 4343,
+        "title": "Spring Boot Course",
+        "description": "creating rest api using spring boot"
+    }
+]
+
+
+localhost:8080/courses/145 gives us course details with id 145 i.e.
+{
+    "id": 145,
+    "title": "Java Core Course",
+    "description": "this course contains basics of java"
+}
+
+Now we have completed GET method.
+Now we'll use PUT method to add course.
+
+-> POST
+NOTE: consumes="application/json"   means data will come in application/json format
+
+STEPS TO POST:
+* Select POST method.
+* Goto Body, goto raw since we have to send data in JSON form.
+* Change Text to JSON.
+
+
+@RequestMapping(path="/courses",method=RequestMethod.GET)    is alternative to   @GetMapping("/courses") 
+In MVC, @RequestMapping was there but it was lengthy
+In REST API, we have to use annotations METHOD-WISE, hence we use @GetMapping,@PostMapping etc.
+@RequestMapping(path="/courses") -> this is GET by default, to change method we use RequestMethod.GET OR RequestMethod.POST
+
+-> PROJECT EXPLANATION
+1. There r 3 packages(controller,data,services), further package data has a package entities.
+controller package has MyController class, entities has Course class , services has CourseService interface & CourseServiceImpl class.
+2. Request first comes to our controller. All the API mapping is in this class MyController.
+   In this class, CourseService interface is @Autowired so that we can use its object,methods in this current class.
+   @Autowired gives us object and injects it i.e. LOOSE COUPLING.
+3. In class Course, we define entities id,title,description then create their constructor,getter,setter.
+4. In interface CourseService, we declare methods, since its an interface we define their body in class CourseServiceImpl.
+
+5. Using GET method:
+ when we enter url we get response eg. @GetMapping("/courses") gives us all courses present, @GetMapping("/courses/{courseId}") gives single course with
+   courseId given and so on.
+@GetMapping("/courses/{courseId}")
+    public Course getCourse(@PathVariable String courseId){
+        return this.courseService.getCourse(Integer.parseInt(courseId));
+}
+// @PathVariable String courseId puts value of {courseId} into this variable String courseId
+// then getCourse() method of CourseService gets called, it takes Id in Integer
+
+6. Implementation: 
+@Service means this class is working as Service Layer i.e. Spring framework identifies this class as a Service class.
+In it, we give our data instead of getting it via DATABASE. We use a list for it.
+TO GET ALL COURSES /courses  (this returns list of courses)
+@Override
+    public List<Course> getCourses(){
+        return list;
+}
+TO GET COURSE USING COURSEID (returns details of course)
+@Override
+    public Course getCourse(int courseId) {
+        Course c=null;
+        for(Course course:list){
+            if(course.getId()==courseId){
+                c = course;
+                break;               // when we get that courseId we were founding, we put it in c and break foreach loop
+            }
+        }
+        return c;
+}
+// we run a foreach loop and as soon as we get the course we were searching, we return it & break out of the loop.
+
+TO POST A NEW COURSE
+@PostMapping("/courses")
+    public Course addCourse(@RequestBody Course course){
+        return this.courseService.addCourse(course);
+}
+// @PostMapping(path = "/courses",consumes = "application/json") tells data comes in json format, not necessary to write
+
+// IMPL. IN CourseServiceImpl
+@Override
+    public Course addCourse(Course course) {
+        list.add(course);
+        return course;
+}
+
+-> PUT
+@PutMapping("/courses")
+    public Course updateCourse(@RequestBody Course course){
+        return this.courseService.updateCourse(course);
+}
+@Override
+    public Course updateCourse(Course course) {
+        list.forEach(e->{
+            if(e.getId()==course.getId()){
+                e.setTitle(course.getTitle());
+                e.setDescription(course.getDescription());
+            }
+        });
+        return course;
+}
+// in updateCourse(): traversing list using foreach, e is lambda function, e will have a course
+// agar naya course which we're updating uski id or hamare current course in foreach uski id same h then
+// we'll add its title & description
+// jo course hum pass krenge uski id list me sbhi courses ki id se match hogi, we'll update that course and return same
+
+-> DELETE
+@DeleteMapping("/courses/{courseId}")
+    public ResponseEntity<HttpStatus> deleteCourse(@PathVariable String courseId){
+        try{
+            this.courseService.deleteCourse(Integer.parseInt(courseId));
+            return new ResponseEntity<>(HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+}
+// when request is sent, 404 not found status shows or if error comes in server
+// status we send in ResponseEntity we have mentioned i.e. <HttpStatus>
+// in try service is called and if any exception comes catch gets executed
+// when exception occurs, catch block comes & a new ResponseEntity gets created and it'll be having INTERNAL_SERVER_ERROR
+// but if try executes smoothly and deletes the course, it shows OK
+
+In Postman, select DELETE.
+localhost:8080/courses/fbjdbjd        // this gives Status:500 Internal Server Error
+localhost:8080/courses/4343         // this deletes course with id 4343 and Status:200 OK
+// after running this delete command, this course is deleted from courselist
+
+-> STORING DATA IN DATABASE AND THEN USING IT INSTEAD OF GIVING OUR OWN DATA
+GOTO application.properties file for doing all the configurations.
+Eg. to change our server port: server.port = 8081 
+# comment in app.pro file
+
+
+spring.datasource.url=jdbc:mysql://localhost:3306/ems?useSSL=false
+spring.datasource.username=root
+spring.datasource.password=shashank@mindit0610
+
+spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL5InnoDBDialect
+
+spring.jpa.hibernate.ddl-auto=update
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

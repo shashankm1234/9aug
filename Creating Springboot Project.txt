@@ -1,0 +1,59 @@
+STEPS TO CREATE A SPRINGBOOT APPLICATION(USING SPRING INITIALIZER):
+1. Goto Spring Initializr
+2. Project -> Maven , Language -> Java , Springboot version(3.1.2) 
+3. Fill the metadata:
+   Artifact -> give your project's name
+   Description -> Give description of your project if you want too
+   Packaging -> Jar
+   Java -> 20 OR 17 depends on version of java in your device
+4. Give the dependencies:
+   (i) Spring web (main dependency, to build rest api), this dependency internally provides apache TOMCAT as a default embedded container
+   (ii) MySQL Driver
+   (iii) Spring Data JPA -> give this when you wanna talk with database, spring data jpa internally uses HIBERNATE as a default jpa provider,reduces a lot of code
+                            used for DAO(data access object) layer or Repository Layer
+   (iv) Lombok -> dependency to reduce boilerplate code
+5. Generate the project
+6. Goto Downloads and Extract it from the downloaded zip file
+7. Open it in intellij
+
+NOTE: All the dependencies are stored in pom.xml file.
+ 
+USE OF application.properties file:
+Configuration means the way in which the parts of something, or a group of things, are arranged
+Springboot provides us a good way to do APPLICATION CONFIGURATION.
+application.properties file
+We can keep data in this file in form of key:value pair. To configure the application, springboot uses this key:value pair.
+Values of keys can be changed using application.properties file.
+Most important file, helps us to customize our project as we want.
+Preconfigured application TO Our Customized Application
+Eg. server.port = 8081 
+Here server.port is key and 8081 is the value i.e. we're making our server port to 8081
+
+TO GET DEPENDENCIES:
+mvnrepository.com
+
+-> pom.xml
+*The full form of POM is Project Object Model.
+*pom is a XML file that contains information about the project and configuration details used by Maven to build the project.
+*When executing a task or goal, Maven looks for the POM in the current directory. 
+*It reads the POM, gets the needed configuration information, then executes the goal.
+*Configurations specified in the POM are the project dependencies, the plugins or goals that can be executed, the build profiles.
+
+-> When this error comes: Failed to configure a DataSource: 'url' attribute is not specified and no embedded datasource could be configured. 
+                          Reason: Failed to determine a suitable driver class
+Add this in application.properties file: spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
+
+-> Maven Repository contains all dependencies whenever we need it we can take it from https://mvnrepository.com/
+
+-> LOMBOK dependency in springboot
+* Spring boot Lombok is nothing but a small library that was used to reduce the unused code from the java applications.
+* IT IS AUTOMATICALLY GENERATING THE GETTER AND SETTER METHOD FOR THE CLASS OBJECT BY USING LOMBOK ANNOTATION.
+
+How Does Lombok Works?
+It is a processor of annotation which works at the time of code compilation; it will be adding code into our project classes.
+if we have added getter and setter annotation in a class by using Lombok, then at the time of compilation code compiler will give 
+the annotation of the Lombok processor to add thing which was required for our project.
+
+
+
+
